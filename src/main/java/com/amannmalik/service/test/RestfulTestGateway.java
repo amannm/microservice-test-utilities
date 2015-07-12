@@ -54,7 +54,27 @@ public class RestfulTestGateway {
         return null;
     }
 
-
+    public static JsonObject generatePostReturningContent(String endpointString, JsonObject object) throws IOException {
+        LoggerFactory.getLogger(RestfulTestGateway.class).info("attempting to POST resource to {} with {}", endpointString, object.toString());
+        HttpURLConnection connection = ServiceRequestFactory.post(endpointString, object);
+        int responseCode = connection.getResponseCode();
+        switch (responseCode) {
+            case 200:
+                try (InputStream inputStream = connection.getInputStream()) {
+                    try (JsonReader parser = Json.createReader(inputStream)) {
+                        return parser.readObject();
+                    }
+                }
+            case 400:
+            case 500:
+                Assert.fail("incorrect response: " + responseCode);
+                break;
+            default:
+                Assert.fail("invalid response: " + responseCode);
+                break;
+        }
+        return null;
+    }
     public static JsonObject readExistent(String locationString) throws IOException {
         HttpURLConnection connection = ServiceRequestFactory.get(locationString);
         int responseCode = connection.getResponseCode();
