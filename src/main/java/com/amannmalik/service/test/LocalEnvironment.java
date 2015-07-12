@@ -13,7 +13,7 @@ import java.util.stream.IntStream;
  */
 public class LocalEnvironment {
 
-    private static int findRandomOpenPort(int minPort, int maxPort) {
+    public static int findRandomOpenPort(int minPort, int maxPort) {
         if (minPort < 0) {
             throw new IllegalArgumentException("Specified minimum port [" + minPort + "] is less than 0");
         }
