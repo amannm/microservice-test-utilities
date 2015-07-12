@@ -94,7 +94,6 @@ public class ServiceRequestFactory {
         return connection;
     }
 
-
     private static URL tryConstructUrl(String urlString) {
         try {
             return new URL(urlString);
