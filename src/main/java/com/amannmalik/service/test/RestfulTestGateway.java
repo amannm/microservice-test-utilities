@@ -131,6 +131,23 @@ public class RestfulTestGateway {
                 break;
         }
     }
+
+    public static void forceNotExistent(String locationString) throws IOException {
+        HttpURLConnection connection = ServiceRequestFactory.delete(locationString);
+        int responseCode = connection.getResponseCode();
+        switch (responseCode) {
+            case 404:
+            case 204:
+                break;
+            case 500:
+                Assert.fail("incorrect response: " + responseCode);
+                break;
+            default:
+                Assert.fail("invalid response: " + responseCode);
+                break;
+        }
+    }
+
     public static JsonObject deleteAndReturnExistent(String locationString) throws IOException {
         HttpURLConnection connection = ServiceRequestFactory.delete(locationString);
         int responseCode = connection.getResponseCode();
