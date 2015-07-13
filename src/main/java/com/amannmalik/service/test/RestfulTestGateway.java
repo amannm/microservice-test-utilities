@@ -131,7 +131,26 @@ public class RestfulTestGateway {
                 break;
         }
     }
-
+    public static JsonObject deleteAndReturnExistent(String locationString) throws IOException {
+        HttpURLConnection connection = ServiceRequestFactory.delete(locationString);
+        int responseCode = connection.getResponseCode();
+        switch (responseCode) {
+            case 200:
+                try (InputStream inputStream = connection.getInputStream()) {
+                    try (JsonReader parser = Json.createReader(inputStream)) {
+                        return parser.readObject();
+                    }
+                }
+            case 404:
+            case 500:
+                Assert.fail("incorrect response: " + responseCode);
+                break;
+            default:
+                Assert.fail("invalid response: " + responseCode);
+                break;
+        }
+        return null;
+    }
 
     public static void deleteExistent(String locationString) throws IOException {
         HttpURLConnection connection = ServiceRequestFactory.delete(locationString);
