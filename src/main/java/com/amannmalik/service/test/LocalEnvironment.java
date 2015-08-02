@@ -13,6 +13,10 @@ import java.util.stream.IntStream;
  */
 public class LocalEnvironment {
 
+    public static int findRandomOpenPort() {
+        return findRandomOpenPort(1024, 65535);
+    }
+
     public static int findRandomOpenPort(int minPort, int maxPort) {
         if (minPort < 0) {
             throw new IllegalArgumentException("Specified minimum port [" + minPort + "] is less than 0");
@@ -25,19 +29,21 @@ public class LocalEnvironment {
         }
         List<Integer> ports = IntStream.range(minPort, maxPort).boxed().collect(Collectors.toList());
         Collections.shuffle(ports);
-        Optional<Integer> integer = ports.stream().filter(i -> {
-            try {
-                ServerSocket serverSocket = ServerSocketFactory.getDefault().createServerSocket(i);
-                serverSocket.close();
-                return true;
-            } catch (Exception ex) {
-                return false;
-            }
-        }).findAny();
+        Optional<Integer> integer = ports.stream().filter(LocalEnvironment::isOpenPort).findAny();
         if (integer.isPresent()) {
             return integer.get();
         } else {
             throw new RuntimeException("Unable to find open port within specified range [" + minPort + "-" + maxPort + "]");
+        }
+    }
+
+    private static boolean isOpenPort(int port) {
+        try {
+            ServerSocket serverSocket = ServerSocketFactory.getDefault().createServerSocket(port);
+            serverSocket.close();
+            return true;
+        } catch (Exception ex) {
+            return false;
         }
     }
 
